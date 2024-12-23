@@ -9,7 +9,7 @@ import UIKit
 
 class HomeViewController: UIViewController {
     
-    let sectionTitle = ["Trending movies", "Popular", "Trending TV", "Upcoming movies", "Top rated"]
+    let sectionTitle = ["Trending movies", "Trending TV", "Popular", "Upcoming movies", "Top rated"]
 
     private let homeFeedTable: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
@@ -26,7 +26,7 @@ class HomeViewController: UIViewController {
         view.backgroundColor = .systemBackground
         homeFeedTable.tableHeaderView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         configureNavBar()
-        getTrendingMovies()
+        fetchData()
     }
     
     override func viewDidLayoutSubviews() {
@@ -35,13 +35,44 @@ class HomeViewController: UIViewController {
         homeFeedTable.frame = view.bounds
     }
     
-    private func getTrendingMovies() {
-        APICaller.shared.getTrendingMovies { results in
+    private func fetchData() {
+//        APICaller.shared.getTrendingMovies { results in
+//            switch (results) {
+//            case .success(let movies):
+//                print(movies.first?.original_title!)
+//            case .failure(let error):
+//                print(error)
+//            }
+//        }
+        
+//        APICaller.shared.getTrendingTv { results in
+//            
+//        }
+        
+//        APICaller.shared.getPopular { results in
+//            switch (results) {
+//                case .success(let movies):
+//                    print(movies.first?.original_title!)
+//                case .failure(let error):
+//                    print(error)
+//            }
+//        }
+        
+//        APICaller.shared.getUpcomingMovies { results in
+//            switch (results) {
+//                case .success(let movies):
+//                    print(movies.first?.original_title!)
+//                case .failure(let error):
+//                    print(error)
+//            }
+//        }
+        
+        APICaller.shared.getTopRatedMovies { results in
             switch (results) {
-            case .success(let movies):
-                print(movies.first?.original_title!)
-            case .failure(let error):
-                print(error)
+                case .success(let movies):
+                    print(movies.first?.original_title!)
+                case .failure(let error):
+                    print(error)
             }
         }
     }
