@@ -7,6 +7,14 @@
 
 import UIKit
 
+enum Sections: Int{
+    case TrendingMovies = 0
+    case TrendingTV = 1
+    case Popular = 2
+    case UpcomingMovies = 3
+    case TopRated = 4
+}
+
 class HomeViewController: UIViewController {
     
     let sectionTitle = ["Trending movies", "Trending TV", "Popular", "Upcoming movies", "Top rated"]
@@ -26,55 +34,12 @@ class HomeViewController: UIViewController {
         view.backgroundColor = .systemBackground
         homeFeedTable.tableHeaderView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         configureNavBar()
-        fetchData()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         homeFeedTable.frame = view.bounds
-    }
-    
-    private func fetchData() {
-//        APICaller.shared.getTrendingMovies { results in
-//            switch (results) {
-//            case .success(let movies):
-//                print(movies.first?.original_title!)
-//            case .failure(let error):
-//                print(error)
-//            }
-//        }
-        
-//        APICaller.shared.getTrendingTv { results in
-//            
-//        }
-        
-//        APICaller.shared.getPopular { results in
-//            switch (results) {
-//                case .success(let movies):
-//                    print(movies.first?.original_title!)
-//                case .failure(let error):
-//                    print(error)
-//            }
-//        }
-        
-//        APICaller.shared.getUpcomingMovies { results in
-//            switch (results) {
-//                case .success(let movies):
-//                    print(movies.first?.original_title!)
-//                case .failure(let error):
-//                    print(error)
-//            }
-//        }
-        
-        APICaller.shared.getTopRatedMovies { results in
-            switch (results) {
-                case .success(let movies):
-                    print(movies.first?.original_title!)
-                case .failure(let error):
-                    print(error)
-            }
-        }
     }
     
     private func configureNavBar() {
@@ -104,6 +69,56 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource{
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CollectionViewTableViewCell.identifier, for: indexPath) as? CollectionViewTableViewCell
         else { return UITableViewCell() }
         
+        switch indexPath.section {
+        case Sections.TrendingMovies.rawValue:
+            APICaller.shared.getTrendingMovies { result in
+                switch result {
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case.failure(let error):
+                    print(error)
+                }
+            }
+        case Sections.TrendingTV.rawValue:
+            APICaller.shared.getTrendingTv { result in
+                switch result {
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case.failure(let error):
+                    print(error)
+                }
+            }
+        case Sections.Popular.rawValue:
+            APICaller.shared.getPopular { result in
+                switch result {
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case.failure(let error):
+                    print(error)
+                }
+            }
+        case Sections.UpcomingMovies.rawValue:
+            APICaller.shared.getUpcomingMovies { result in
+                switch result {
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case.failure(let error):
+                    print(error)
+                }
+            }
+        case Sections.TopRated.rawValue:
+            APICaller.shared.getTopRatedMovies { result in
+                switch result {
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case.failure(let error):
+                    print(error)
+                }
+            }
+        default:
+            return UITableViewCell()
+        }
+        
         return cell
     }
     
@@ -118,7 +133,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         guard let header = view as? UITableViewHeaderFooterView else { return }
         var content = header.defaultContentConfiguration()
-        content.textProperties.color = .black
+        content.textProperties.color = .systemGray
         content.textProperties.font = .systemFont(ofSize: 18, weight: .semibold)
         content.text = sectionTitle[section].lowercased()
         

@@ -20,7 +20,7 @@ class HeroHeaderUIView: UIView {
     let playButton: UIButton = {
         let button = UIButton()
         button.setTitle("Play", for: .normal)
-        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderColor = UIColor.systemRed.cgColor
         button.layer.borderWidth = 1
         button.layer.cornerRadius = 5
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -30,7 +30,7 @@ class HeroHeaderUIView: UIView {
     let downloadButton: UIButton = {
         let button = UIButton()
         button.setTitle("Download", for: .normal)
-        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderColor = UIColor.systemRed.cgColor
         button.layer.borderWidth = 1
         button.layer.cornerRadius = 5
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -61,11 +61,11 @@ class HeroHeaderUIView: UIView {
         
         NSLayoutConstraint.activate([
             playButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 70),
-            playButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -40),
+            playButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -70),
             playButton.widthAnchor.constraint(equalToConstant: 100),
             
             downloadButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -70),
-            downloadButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -40),
+            downloadButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -70),
             downloadButton.widthAnchor.constraint(equalToConstant: 100)
         ])
     }
@@ -78,6 +78,6 @@ class HeroHeaderUIView: UIView {
             UIColor.systemBackground.cgColor
         ]
         layer.addSublayer(gradientLayer)
-        gradientLayer.frame = bounds
+        gradientLayer.frame = CGRect(x: 0, y: 270, width: Int(bounds.width), height: Int(bounds.height - 270))
     }
 }

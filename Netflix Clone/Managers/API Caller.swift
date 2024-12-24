@@ -13,13 +13,15 @@ struct Constants {
 }
 
 enum APIError: Error{
-    
+    case failedToGetData
+    case invalidURL
+    case noData
 }
 
 class APICaller{
     static let shared = APICaller()
     
-    func getTrendingMovies(language: String = "en-US", completion: @escaping (Result<[Movie], Error>) -> Void) {
+    func getTrendingMovies(language: String = "en-US", completion: @escaping (Result<[Title], Error>) -> Void) {
         var components = URLComponents(string: "\(Constants.baseURL)/3/trending/movie/day")!
         components.queryItems = [
             URLQueryItem(name: "api_key", value: Constants.API_Key),
@@ -49,7 +51,7 @@ class APICaller{
             }
             
             do{
-                let results = try JSONDecoder().decode(TrendingMoviesResponse.self, from: data)
+                let results = try JSONDecoder().decode(TrendingTitleResponse.self, from: data)
                 completion(.success(results.results))
             } catch {
                 completion(.failure(error))
@@ -59,7 +61,7 @@ class APICaller{
         task.resume()
     }
     
-    func getTrendingTv(language: String = "en-US", completion: @escaping (Result<[Tv], Error>) -> Void) {
+    func getTrendingTv(language: String = "en-US", completion: @escaping (Result<[Title], Error>) -> Void) {
         var components = URLComponents(string: "\(Constants.baseURL)/3/trending/tv/day")!
         components.queryItems = [
             URLQueryItem(name: "api_key", value: Constants.API_Key),
@@ -88,7 +90,7 @@ class APICaller{
             }
             
             do{
-                let results = try JSONDecoder().decode(TrendingTvResponse.self, from: data)
+                let results = try JSONDecoder().decode(TrendingTitleResponse.self, from: data)
                 completion(.success(results.results))
             } catch {
                 completion(.failure(error))
@@ -98,7 +100,7 @@ class APICaller{
         task.resume()
     }
     
-    func getPopular(language: String = "en-US", completion: @escaping (Result<[Tv], Error>) -> Void) {
+    func getPopular(language: String = "en-US", completion: @escaping (Result<[Title], Error>) -> Void) {
         var components = URLComponents(string: "\(Constants.baseURL)/3/movie/popular")!
         components.queryItems = [
             URLQueryItem(name: "api_key", value: Constants.API_Key),
@@ -127,7 +129,7 @@ class APICaller{
             }
             
             do{
-                let results = try JSONDecoder().decode(TrendingTvResponse.self, from: data)
+                let results = try JSONDecoder().decode(TrendingTitleResponse.self, from: data)
                 completion(.success(results.results))
             } catch {
                 completion(.failure(error))
@@ -137,7 +139,7 @@ class APICaller{
         task.resume()
     }
     
-    func getUpcomingMovies(language: String = "en_US", completion: @escaping(Result<[Movie], Error>) -> Void ) {
+    func getUpcomingMovies(language: String = "en_US", completion: @escaping(Result<[Title], Error>) -> Void ) {
         var components = URLComponents(string: "\(Constants.baseURL)/3/movie/upcoming")
         components?.queryItems = [
             URLQueryItem(name: "api_key", value: Constants.API_Key),
@@ -167,7 +169,7 @@ class APICaller{
             }
             
             do {
-                let results = try JSONDecoder().decode(TrendingMoviesResponse.self, from: data)
+                let results = try JSONDecoder().decode(TrendingTitleResponse.self, from: data)
                 completion(.success(results.results))
             } catch {
                 completion(.failure(error))
@@ -177,7 +179,7 @@ class APICaller{
         task.resume()
     }
     
-    func getTopRatedMovies (language: String = "en_US", completion: @escaping(Result<[Movie], Error>) -> Void ) {
+    func getTopRatedMovies (language: String = "en_US", completion: @escaping(Result<[Title], Error>) -> Void ) {
         var components = URLComponents(string: "\(Constants.baseURL)/3/movie/top_rated")
         components?.queryItems = [
             URLQueryItem(name: "api_key", value: Constants.API_Key),
@@ -207,7 +209,52 @@ class APICaller{
             }
             
             do {
-                let results = try JSONDecoder().decode(TrendingMoviesResponse.self, from: data)
+                let results = try JSONDecoder().decode(TrendingTitleResponse.self, from: data)
+                completion(.success(results.results))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+        
+        task.resume()
+    }
+    
+    func getDiscoverMovies (language: String = "en_US", completion: @escaping(Result<[Title], Error>) -> Void ) {
+        var components = URLComponents(string: "\(Constants.baseURL)/3/discover/movie")
+        components?.queryItems = [
+            URLQueryItem(name: "api_key", value: Constants.API_Key),
+            URLQueryItem(name: "language", value: language),
+            URLQueryItem(name: "sort_by", value: "popularity.desc"),
+            URLQueryItem(name: "include_adult", value: "false"),
+            URLQueryItem(name: "include_video", value: "false"),
+            URLQueryItem(name: "page", value: "1"),
+            URLQueryItem(name: "with_watch_monetization_types", value: "flatrate")
+        ]
+        
+        guard let url = components?.url else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "Accept" : "application/json"
+        ]
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+            }
+            
+            guard let data else {
+                completion(.failure(NSError(domain: "No data", code: 0)))
+                return
+            }
+            
+            do {
+                let results = try JSONDecoder().decode(TrendingTitleResponse.self, from: data)
                 completion(.success(results.results))
             } catch {
                 completion(.failure(error))
