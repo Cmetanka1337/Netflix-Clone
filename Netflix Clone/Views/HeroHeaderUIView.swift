@@ -23,6 +23,7 @@ class HeroHeaderUIView: UIView {
         button.layer.borderColor = UIColor.systemRed.cgColor
         button.layer.borderWidth = 1
         button.layer.cornerRadius = 5
+        button.backgroundColor = .systemRed
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -33,6 +34,7 @@ class HeroHeaderUIView: UIView {
         button.layer.borderColor = UIColor.systemRed.cgColor
         button.layer.borderWidth = 1
         button.layer.cornerRadius = 5
+        button.backgroundColor = .systemRed
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -43,7 +45,7 @@ class HeroHeaderUIView: UIView {
         addSubview(playButton)
         addSubview(downloadButton)
         drawGradient()
-        configure()
+        applyConstraints()
     }
     
     required init?(coder: NSCoder) {
@@ -57,7 +59,13 @@ class HeroHeaderUIView: UIView {
         heroImage.frame = bounds
     }
     
-    private func configure(){
+    public func configure(with model: TitleViewModel) {
+        let url = URL(string: "https://image.tmdb.org/t/p/w500/\(model.posterURL)")
+        
+        heroImage.sd_setImage(with: url)
+    }
+    
+    private func applyConstraints(){
         
         NSLayoutConstraint.activate([
             playButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 70),
@@ -78,6 +86,6 @@ class HeroHeaderUIView: UIView {
             UIColor.systemBackground.cgColor
         ]
         layer.addSublayer(gradientLayer)
-        gradientLayer.frame = CGRect(x: 0, y: 270, width: Int(bounds.width), height: Int(bounds.height - 270))
+        gradientLayer.frame = CGRect(x: 0, y: 370, width: Int(bounds.width), height: Int(bounds.height - 370))
     }
 }
