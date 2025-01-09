@@ -60,3 +60,6 @@ Or by running the following command in the console
 ```
 git clone https://github.com/Cmetanka1337/Netflix-Clone.git
 ```
+
+# The project was partly based on the tutorial
+> https://youtu.be/KCgYDCKqato?si=mWvyUSg0uy2rhyVP
