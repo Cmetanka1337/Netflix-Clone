@@ -1,5 +1,5 @@
 # Netflix Clone
-[![temp-Image-Yjt-W11.avif](https://i.postimg.cc/zftXVzKZ/temp-Image-Yjt-W11.avif)](https://postimg.cc/2qWftf02)
+[![temp-Imagez-B2x-SS.avif](https://i.postimg.cc/tT8qNBBB/temp-Imagez-B2x-SS.avif)](https://postimg.cc/wycY6Q8N)
 
 # Project overview
 
