@@ -1,5 +1,5 @@
 # Netflix Clone
-![Logo](https://i.postimg.cc/Hxb8btjQ/temp-Image-Mt6-Gs-R.avif)
+[![temp-Image-Mt6-Gs-R.avif](https://i.postimg.cc/Hxb8btjQ/temp-Image-Mt6-Gs-R.avif)](https://postimg.cc/TLYP6gVw)
 
 # Project overview
 
