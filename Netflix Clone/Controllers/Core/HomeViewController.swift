@@ -31,6 +31,7 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         homeFeedTable.delegate = self
         homeFeedTable.dataSource = self
         
@@ -65,13 +66,14 @@ class HomeViewController: UIViewController {
         APICaller.shared.getTrendingMovies { [weak self ]result in
             switch result {
             case .success(let titles):
-                let selectedTitle = titles.randomElement()
-                self?.headerView?.configure(
-                    with: TitleViewModel(
-                        titleName: selectedTitle?.original_title ?? selectedTitle?.title ?? "",
-                        posterURL: selectedTitle?.poster_path ?? ""))
+                guard let selectedTitle = titles.randomElement() else { return }
+                self?.headerView?.configure(with: selectedTitle)
             case.failure(let error):
-                print(error.localizedDescription)
+                
+                DispatchQueue.main.async {
+                    guard let view = self?.view else { return }
+                    let _ = MessageContainerView(superview: view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                }
             }
         }
     }
@@ -101,7 +103,10 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource{
                 case .success(let titles):
                     cell.configure(with: titles)
                 case.failure(let error):
-                    print(error)
+                    
+                    DispatchQueue.main.async {
+                        let _ = MessageContainerView(superview: self.view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                    }
                 }
             }
         case Sections.TrendingTV.rawValue:
@@ -110,7 +115,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource{
                 case .success(let titles):
                     cell.configure(with: titles)
                 case.failure(let error):
-                    print(error)
+                    DispatchQueue.main.async {
+                        let _ = MessageContainerView(superview: self.view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                    }
                 }
             }
         case Sections.Popular.rawValue:
@@ -119,7 +126,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource{
                 case .success(let titles):
                     cell.configure(with: titles)
                 case.failure(let error):
-                    print(error)
+                    DispatchQueue.main.async {
+                        let _ = MessageContainerView(superview: self.view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                    }
                 }
             }
         case Sections.UpcomingMovies.rawValue:
@@ -128,7 +137,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource{
                 case .success(let titles):
                     cell.configure(with: titles)
                 case.failure(let error):
-                    print(error)
+                    DispatchQueue.main.async {
+                        let _ = MessageContainerView(superview: self.view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                    }
                 }
             }
         case Sections.TopRated.rawValue:
@@ -137,7 +148,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource{
                 case .success(let titles):
                     cell.configure(with: titles)
                 case.failure(let error):
-                    print(error)
+                    DispatchQueue.main.async {
+                        let _ = MessageContainerView(superview: self.view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                    }
                 }
             }
         default:
@@ -171,12 +184,12 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource{
         return sectionTitle[section]
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let defaultOffset = view.safeAreaInsets.top
-        let offset = scrollView.contentOffset.y + defaultOffset
-        
-        navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, -offset))
-    }
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        let defaultOffset = view.safeAreaInsets.top
+//        let offset = scrollView.contentOffset.y + defaultOffset
+//        
+//        navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, -offset))
+//    }
 }
 
 extension HomeViewController: CollectionViewTableViewCellDelegate {

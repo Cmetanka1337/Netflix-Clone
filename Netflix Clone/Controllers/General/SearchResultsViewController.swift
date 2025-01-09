@@ -43,6 +43,7 @@ class SearchResultsViewController: UIViewController {
         
         resultsCollectionView.frame = view.bounds
     }
+    
 }
 
 extension SearchResultsViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -72,13 +73,24 @@ extension SearchResultsViewController: UICollectionViewDelegate, UICollectionVie
             DispatchQueue.main.async {
                 switch results {
                 case .success(let videoElement):
-                    let model = TitlePreviewViewModel(title: titleName, youtubeVideo: videoElement, titleOverview: title.overview ?? "No Data")
+                    let model = TitlePreviewViewModel(
+                        title: titleName,
+                        youtubeVideo: videoElement,
+                        titleOverview: title.overview ?? "No Data",
+                        releaseDate: Date().convertToForm(title.release_date ?? ""),
+                        adults: title.adult,
+                        voteAverage: title.vote_average
+                    )
                     self?.delegate?.searchResultsViewControllerDidTapItem(model)
                 case .failure(let error):
-                    print(error.localizedDescription)
+                    DispatchQueue.main.async {
+                        DispatchQueue.main.async {
+                            guard let view = self?.view else { return }
+                            let _ = MessageContainerView(superview: view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                        }
+                    }
                 }
             }
         }
     }
-    
 }

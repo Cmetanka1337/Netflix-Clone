@@ -60,7 +60,9 @@ class CollectionViewTableViewCell: UITableViewCell {
             case .success():
                 NotificationCenter.default.post(name: NSNotification.Name("downloaded"), object: nil)
             case .failure(let error):
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    let _ = MessageContainerView(superview: self, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                }
             }
         }
     }
@@ -90,10 +92,21 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
             case .success(let videoElement):
                 guard let self = self else { return }
                 let overview = self.titles[indexPath.row].overview
-                let viewModel = TitlePreviewViewModel(title: title, youtubeVideo: videoElement, titleOverview: overview ?? "Review not found")
+                let viewModel = TitlePreviewViewModel(
+                    title: title,
+                    youtubeVideo: videoElement,
+                    titleOverview: overview ?? "Review not found",
+                    releaseDate: Date().convertToForm(titles[indexPath.row].release_date ?? ""),
+                    adults: titles[indexPath.row].adult,
+                    voteAverage: titles[indexPath.row].vote_average
+                )
                 self.delegate?.collectionViewTableViewCellDidTapCell(self, viewModel: viewModel)
             case .failure(let error):
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    guard let view = self?.superview else { return }
+                    let _ = MessageContainerView(superview: view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                }
+                
             }
         }
     }

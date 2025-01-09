@@ -11,4 +11,7 @@ struct TitlePreviewViewModel {
     let title: String
     let youtubeVideo: YouTubeElement
     let titleOverview: String
+    let releaseDate: String
+    let adults: Bool
+    let voteAverage: Double
 }

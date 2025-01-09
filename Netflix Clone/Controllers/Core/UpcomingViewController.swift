@@ -27,6 +27,7 @@ class UpcomingViewController: UIViewController {
         title = "Upcoming"
         
         navigationController?.navigationItem.largeTitleDisplayMode = .always
+        navigationController?.navigationBar.tintColor = .systemGray
         
         view.addSubview(upcomingTable)
         
@@ -50,7 +51,10 @@ class UpcomingViewController: UIViewController {
                     self?.upcomingTable.reloadData()
                 }
             case.failure(let error):
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    
+                    let _ = MessageContainerView(superview: self!.view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                }
             }
         }
     }
@@ -90,13 +94,22 @@ extension UpcomingViewController: UITableViewDelegate, UITableViewDataSource {
             switch results {
             case .success(let videoElement):
                 DispatchQueue.main.async {
-                    let model = TitlePreviewViewModel(title: titleName, youtubeVideo: videoElement, titleOverview: title.overview ?? "No Data")
+                    let model = TitlePreviewViewModel(
+                        title: titleName,
+                        youtubeVideo: videoElement,
+                        titleOverview: title.overview ?? "No Data",
+                        releaseDate: Date().convertToForm(title.release_date ?? ""),
+                        adults: title.adult,
+                        voteAverage: title.vote_average
+                    )
                     vc.configure(model: model)
                     
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             case.failure(let error):
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    let _ = MessageContainerView(superview: self!.view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                }
             }
         }
     }

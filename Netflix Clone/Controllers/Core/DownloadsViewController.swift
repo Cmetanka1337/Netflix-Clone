@@ -25,6 +25,7 @@ class DownloadsViewController: UIViewController {
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationItem.largeTitleDisplayMode = .always
+        navigationController?.navigationBar.tintColor = .systemGray
         
         title = "Downloads"
         downloadsTable.delegate = self
@@ -48,12 +49,14 @@ class DownloadsViewController: UIViewController {
             switch results {
             case .success(let titles):
                 self?.titles = titles
-                print("reloading table")
                 DispatchQueue.main.async {
                     self?.downloadsTable.reloadData()
                 }
             case .failure(let error):
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    guard let view = self?.view else { return }
+                    let _ = MessageContainerView(superview: view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                }
             }
         }
     }
@@ -92,7 +95,10 @@ extension DownloadsViewController: UITableViewDelegate, UITableViewDataSource {
                     }
                     
                 case .failure(let error):
-                    print(error.localizedDescription)
+                    DispatchQueue.main.async {
+                        guard let view = self?.view else { return }
+                        let _ = MessageContainerView(superview: view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                    }
                 }
             }
         default:
@@ -113,13 +119,23 @@ extension DownloadsViewController: UITableViewDelegate, UITableViewDataSource {
             switch results {
             case .success(let videoElement):
                 DispatchQueue.main.async {
-                    let model = TitlePreviewViewModel(title: titleName, youtubeVideo: videoElement, titleOverview: title.overview ?? "No Data")
+                    let model = TitlePreviewViewModel(
+                        title: titleName,
+                        youtubeVideo: videoElement,
+                        titleOverview: title.overview ?? "No Data",
+                        releaseDate: Date().convertToForm(title.release_date ?? ""),
+                        adults: title.adult,
+                        voteAverage: title.vote_average
+                    )
                     vc.configure(model: model)
                     
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             case.failure(let error):
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    guard let view = self?.view else { return }
+                    let _ = MessageContainerView(superview: view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                }
             }
         }
     }

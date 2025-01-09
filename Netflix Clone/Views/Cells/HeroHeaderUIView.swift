@@ -14,6 +14,7 @@ class HeroHeaderUIView: UIView {
         imageView.image = UIImage(named: "heroImage")
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+        
         return imageView
     }()
     
@@ -22,9 +23,10 @@ class HeroHeaderUIView: UIView {
         button.setTitle("Play", for: .normal)
         button.layer.borderColor = UIColor.systemRed.cgColor
         button.layer.borderWidth = 1
-        button.layer.cornerRadius = 5
+        button.layer.cornerRadius = 15
         button.backgroundColor = .systemRed
         button.translatesAutoresizingMaskIntoConstraints = false
+        
         return button
     }()
     
@@ -33,9 +35,10 @@ class HeroHeaderUIView: UIView {
         button.setTitle("Download", for: .normal)
         button.layer.borderColor = UIColor.systemRed.cgColor
         button.layer.borderWidth = 1
-        button.layer.cornerRadius = 5
+        button.layer.cornerRadius = 15
         button.backgroundColor = .systemRed
         button.translatesAutoresizingMaskIntoConstraints = false
+        
         return button
     }()
     
@@ -59,8 +62,36 @@ class HeroHeaderUIView: UIView {
         heroImage.frame = bounds
     }
     
-    public func configure(with model: TitleViewModel) {
-        let url = URL(string: "https://image.tmdb.org/t/p/w500/\(model.posterURL)")
+    public func configure(with model: Title) {
+        guard let poster_path = model.poster_path, let url = URL(string: "https://image.tmdb.org/t/p/w500/\(poster_path)") else {
+            DispatchQueue.main.async {
+                self.heroImage.image = UIImage(named: "imagePlaceholder")
+                self.downloadButton.isHidden = true
+                self.playButton.isHidden = true
+            }
+            return
+        }
+    
+        let action = UIAction { _ in
+            DataPersistenceManager.shared.downloadTitleWith(model: model) { [weak self] results in
+                switch results {
+                case .success():
+                    NotificationCenter.default.post(name: NSNotification.Name("downloaded"), object: nil)
+                    guard let view = self else { return }
+                    let downloadedView = DownloadedContainerView(superview: view)
+                    downloadedView.dismissView()
+                case .failure(let error):
+                    DispatchQueue.main.async {
+                        guard let self = self else { return }
+                        let _ = MessageContainerView(superview: self, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                    }
+                }
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.downloadButton.addAction(action, for: .touchUpInside)
+        }
         
         heroImage.sd_setImage(with: url)
     }

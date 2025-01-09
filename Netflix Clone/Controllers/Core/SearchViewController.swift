@@ -30,16 +30,14 @@ class SearchViewController: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
-        
-        navigationController?.navigationBar.prefersLargeTitles = true
         title = "Search"
         
+        navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationItem.largeTitleDisplayMode = .always
-        
-        view.addSubview(discoverTable)
-        
         navigationItem.searchController = searchController
         navigationController?.navigationBar.tintColor = .systemGray
+        
+        view.addSubview(discoverTable)
         
         searchController.searchResultsUpdater = self
         
@@ -63,7 +61,10 @@ class SearchViewController: UIViewController {
                     self?.discoverTable.reloadData()
                 }
             case.failure(let error):
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    guard let view = self?.view else { return }
+                    let _ = MessageContainerView(superview: view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                }
             }
         }
     }
@@ -82,7 +83,7 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             return UITableViewCell()
         }
         let title = titles[indexPath.row]
-        let model = TitleViewModel(titleName: title.original_title ?? title.title ?? "No data", posterURL: title.poster_path ?? "Placeholder for default image")
+        let model = TitleViewModel(titleName: title.original_title ?? title.title ?? "No data", posterURL: title.poster_path ?? "")
         cell.configure(with: model)
         
         return cell
@@ -105,12 +106,22 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             switch results {
             case .success(let videoElement):
                 DispatchQueue.main.async {
-                    let model = TitlePreviewViewModel(title: titleName, youtubeVideo: videoElement, titleOverview: title.overview ?? "No Data")
+                    let model = TitlePreviewViewModel(
+                        title: titleName,
+                        youtubeVideo: videoElement,
+                        titleOverview: title.overview ?? "No Data",
+                        releaseDate: Date().convertToForm(title.release_date ?? ""),
+                        adults: title.adult,
+                        voteAverage: title.vote_average
+                    )
                     vc.configure(model: model)
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             case.failure(let error):
-                print(error.localizedDescription)
+                DispatchQueue.main.async {
+                    guard let view = self?.view else { return }
+                    let _ = MessageContainerView(superview: view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                }
             }
         }
     }
@@ -134,7 +145,9 @@ extension SearchViewController: UISearchResultsUpdating, SearchResultsViewContro
                     resultController.titles = titles
                     resultController.resultsCollectionView.reloadData()
                 case.failure(let error):
-                    print(error.localizedDescription)
+                    DispatchQueue.main.async {
+                        let _ = MessageContainerView(superview: self.view, title: "Something went wrong!", text: error.localizedDescription, image: UIImage(systemName: "exclamationmark.triangle"))
+                    }
                 }
             }
         }
@@ -143,7 +156,15 @@ extension SearchViewController: UISearchResultsUpdating, SearchResultsViewContro
     func searchResultsViewControllerDidTapItem(_ model: TitlePreviewViewModel) {
         DispatchQueue.main.async { [weak self] in
             let vc = TitlePreviewViewController()
-            let viewModel = TitlePreviewViewModel(title: model.title, youtubeVideo: model.youtubeVideo, titleOverview: model.titleOverview)
+            let viewModel = TitlePreviewViewModel(
+                title: model.title,
+                youtubeVideo: model.youtubeVideo,
+                titleOverview: model.titleOverview,
+                releaseDate: model.releaseDate,
+                adults: model.adults,
+                voteAverage: model.voteAverage
+            )
+            
             vc.configure(model: viewModel)
             
             self?.navigationController?.pushViewController(vc, animated: true)

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct Constants {
     static let API_Key = "23a242357ff07c9035e34352ee363c2e"
@@ -14,14 +15,15 @@ struct Constants {
     static let YouTubeBaseURL = "https://youtube.googleapis.com/youtube/v3/search"
 }
 
-enum APIError: Error{
-    case failedToGetData
-    case invalidURL
-    case noData
+enum APIError:  String, Error{
+    case failedToGetData = "Something went wrog! App cannot get data from server. Check your internet connection and try again."
+    case invalidURL = "Oops. Something went wrong! Invalid URL."
+    case noData = "Something went wrong! There is no data on the server for your request."
 }
 
 class APICaller{
     static let shared = APICaller()
+    let cache = NSCache<NSString, UIImage>()
     
     func getTrendingMovies(language: String = "en-US", completion: @escaping (Result<[Title], Error>) -> Void) {
         var components = URLComponents(string: "\(Constants.baseURL)/3/trending/movie/day")!
@@ -31,7 +33,7 @@ class APICaller{
         ]
         
         guard let url = components.url else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
+            completion(.failure(APIError.invalidURL))
             return
         }
         
@@ -48,7 +50,7 @@ class APICaller{
             }
             
             guard let data else {
-                completion(.failure(NSError(domain: "No data", code: 0, userInfo: nil)))
+                completion(.failure(APIError.noData))
                 return
             }
             
@@ -71,7 +73,7 @@ class APICaller{
         ]
         
         guard let url = components.url else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
+            completion(.failure(APIError.invalidURL))
             return
         }
         var request = URLRequest(url: url)
@@ -87,7 +89,7 @@ class APICaller{
             }
             
             guard let data else {
-                completion(.failure(NSError(domain: "No data", code: 0, userInfo: nil)))
+                completion(.failure(APIError.noData))
                 return
             }
             
@@ -110,7 +112,7 @@ class APICaller{
         ]
         
         guard let url = components.url else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
+            completion(.failure(APIError.invalidURL))
             return
         }
         var request = URLRequest(url: url)
@@ -126,7 +128,7 @@ class APICaller{
             }
             
             guard let data else {
-                completion(.failure(NSError(domain: "No data", code: 0, userInfo: nil)))
+                completion(.failure(APIError.noData))
                 return
             }
             
@@ -149,7 +151,7 @@ class APICaller{
         ]
         
         guard let url = components?.url else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            completion(.failure(APIError.invalidURL))
             return
         }
         
@@ -166,7 +168,7 @@ class APICaller{
             }
             
             guard let data else {
-                completion(.failure(NSError(domain: "No data", code: 0)))
+                completion(.failure(APIError.noData))
                 return
             }
             
@@ -189,7 +191,7 @@ class APICaller{
         ]
         
         guard let url = components?.url else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            completion(.failure(APIError.invalidURL))
             return
         }
         
@@ -206,7 +208,7 @@ class APICaller{
             }
             
             guard let data else {
-                completion(.failure(NSError(domain: "No data", code: 0)))
+                completion(.failure(APIError.noData))
                 return
             }
             
@@ -234,7 +236,7 @@ class APICaller{
         ]
         
         guard let url = components?.url else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            completion(.failure(APIError.invalidURL))
             return
         }
         
@@ -251,7 +253,7 @@ class APICaller{
             }
             
             guard let data else {
-                completion(.failure(NSError(domain: "No data", code: 0)))
+                completion(.failure(APIError.noData))
                 return
             }
             
@@ -277,7 +279,7 @@ class APICaller{
         ]
         
         guard let url = components?.url else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            completion(.failure(APIError.invalidURL))
             return
         }
         
@@ -294,7 +296,7 @@ class APICaller{
             }
             
             guard let data else {
-                completion(.failure(NSError(domain: "No data", code: 0)))
+                completion(.failure(APIError.noData))
                 return
             }
             
@@ -311,9 +313,10 @@ class APICaller{
     
     func getVideo(query: String, completion: @escaping(Result<YouTubeElement, Error>) -> Void ) {
         guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
-
-        guard let url = URL(string: "\(Constants.YouTubeBaseURL)?q=\(query)&key=\(Constants.YouTubeAPI_KEY)") else { return }
-        
+        guard let url = URL(string: "\(Constants.YouTubeBaseURL)?q=\(query)&key=\(Constants.YouTubeAPI_KEY)") else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.timeoutInterval = 10
@@ -327,7 +330,7 @@ class APICaller{
             }
             
             guard let data else {
-                completion(.failure(NSError(domain: "No data", code: 0)))
+                completion(.failure(APIError.noData))
                 return
             }
             

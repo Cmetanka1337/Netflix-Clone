@@ -19,6 +19,7 @@ class DataPersistenceManager {
     
     public static let shared = DataPersistenceManager()
     
+    
     func downloadTitleWith(model: Title, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         
@@ -56,7 +57,6 @@ class DataPersistenceManager {
         request = TitleItem.fetchRequest()
                 
         do {
-            print("fetching data")
             let titles = try context.fetch(request)
             completion(.success(titles))
         } catch {

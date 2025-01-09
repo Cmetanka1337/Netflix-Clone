@@ -23,6 +23,7 @@ class TitleTableViewCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 20, weight: .thin)
+        label.numberOfLines = 0
         
         return label
     }()
@@ -55,7 +56,10 @@ class TitleTableViewCell: UITableViewCell {
     }
     
     public func configure(with model: TitleViewModel){
-        let url = URL(string: "https://image.tmdb.org/t/p/w500/\(model.posterURL)")
+        guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(model.posterURL)") else {
+            titlePosterImageView.image = UIImage(named: "imagePlaceholder")
+            return
+        }
         titlePosterImageView.sd_setImage(with: url)
         titleLabel.text = model.titleName
     }
@@ -67,11 +71,15 @@ class TitleTableViewCell: UITableViewCell {
             titlePosterImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             titlePosterImageView.widthAnchor.constraint(equalToConstant: 100),
             
+            playButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+            playButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            playButton.widthAnchor.constraint(equalToConstant: 50),
+            playButton.heightAnchor.constraint(equalToConstant: 50),
+            
             titleLabel.leadingAnchor.constraint(equalTo: titlePosterImageView.trailingAnchor, constant: 15),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            
-            playButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
-            playButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            titleLabel.trailingAnchor.constraint(equalTo: playButton.leadingAnchor, constant: -5),
+            titleLabel.heightAnchor.constraint(equalToConstant:  120),
         ])
     }
 }
