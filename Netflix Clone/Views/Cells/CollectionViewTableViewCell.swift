@@ -115,6 +115,8 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
         let config = UIContextMenuConfiguration(actionProvider:  { _ in
             let downloadAction = UIAction(title: "Download",state: .off) { _ in
                 self.downloadTitleAt(indexPath: indexPath)
+                let downloadedView = DownloadedContainerView(superview: self)
+                downloadedView.dismissView()
             }
             return UIMenu(options: .displayInline, children: [downloadAction])
         })

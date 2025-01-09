@@ -127,6 +127,7 @@
 			children = (
 				7A8FF21E2D2ED74D006843E5 /* Cells */,
 				7A8FF21A2D2B033D006843E5 /* DownloadedContainerView.swift */,
+				7A7D48B22D118BEA00330ED3 /* HeroHeaderUIView.swift */,
 				7A8FF21C2D2EA685006843E5 /* MessageContainerView.swift */,
 			);
 			path = Views;
@@ -201,7 +202,6 @@
 			isa = PBXGroup;
 			children = (
 				7A7D48B02D10A16A00330ED3 /* CollectionViewTableViewCell.swift */,
-				7A7D48B22D118BEA00330ED3 /* HeroHeaderUIView.swift */,
 				7A8FF1DA2D1AF061006843E5 /* TitleCollectionViewCell.swift */,
 				7A8FF1E12D1B02C8006843E5 /* TitleTableViewCell.swift */,
 			);
